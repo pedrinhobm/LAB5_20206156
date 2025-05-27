@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="medication_types">
+        <item>Pastilla</item>
+        <item>Jarabe</item>
+        <item>Ampolla</item>
+        <item>Cápsula</item>
+        <item>Inyección</item>
+        <item>Otro</item>
+    </string-array>
+</resources>
