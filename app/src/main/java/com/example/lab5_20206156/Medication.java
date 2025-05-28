@@ -1,15 +1,13 @@
 package com.example.lab5_20206156;
-
 import java.io.Serializable;
-import java.util.Calendar;
 
 public class Medication implements Serializable {
-    private String id; // ID único para cada medicamento
+    private String id;
     private String name;
-    private String type; // Pastilla, Jarabe, Ampolla, Cápsula
+    private String type;
     private String dosage;
-    private int frequencyHours; // Cada X horas
-    private long startDateMillis; // Fecha y Hora de inicio en milisegundos
+    private int frequencyHours;
+    private long startDateMillis;
 
     public Medication(String id, String name, String type, String dosage, int frequencyHours, long startDateMillis) {
         this.id = id;
@@ -20,49 +18,48 @@ public class Medication implements Serializable {
         this.startDateMillis = startDateMillis;
     }
 
-    // Getters
     public String getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getDosage() {
-        return dosage;
-    }
-
-    public int getFrequencyHours() {
-        return frequencyHours;
-    }
-
-    public long getStartDateMillis() {
-        return startDateMillis;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public void setType(String type) {
         this.type = type;
     }
 
+    public String getDosage() {
+        return dosage;
+    }
+
     public void setDosage(String dosage) {
         this.dosage = dosage;
     }
 
+    public int getFrequencyHours() {
+        return frequencyHours;
+    }
+
     public void setFrequencyHours(int frequencyHours) {
         this.frequencyHours = frequencyHours;
+    }
+
+    public long getStartDateMillis() {
+        return startDateMillis;
     }
 
     public void setStartDateMillis(long startDateMillis) {

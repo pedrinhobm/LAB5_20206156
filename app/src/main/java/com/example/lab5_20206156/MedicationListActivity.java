@@ -1,25 +1,20 @@
 package com.example.lab5_20206156;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton; // Importar ImageButton
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID; // Asegúrate de que UUID esté importado si se usa en otras partes
 
 public class MedicationListActivity extends AppCompatActivity {
 
@@ -27,30 +22,24 @@ public class MedicationListActivity extends AppCompatActivity {
     private MedicationAdapter medicationAdapter;
     private List<Medication> medicationList;
     private TextView textViewNoMedications;
-    private ImageButton buttonBack; // Declarar ImageButton para el botón de retroceso
+    private ImageButton buttonBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medication_list);
-
-        // Inicializar vistas
-        recyclerViewMedications = findViewById(R.id.recyclerViewMedications);
+        recyclerViewMedications = findViewById(R.id.recyclerViewMedications);// Para esta vista se va mostrar cada item en un RecycletView
         textViewNoMedications = findViewById(R.id.textViewNoMedications);
-        FloatingActionButton fabAddMedication = findViewById(R.id.fabAddMedication);
-        buttonBack = findViewById(R.id.buttonBack); // Inicializar el botón de retroceso del encabezado
-
+        FloatingActionButton fabAddMedication = findViewById(R.id.fabAddMedication); // este es el boton (+) para añadir un medicamento
+        buttonBack = findViewById(R.id.buttonBack); // este es el botón de retroceso en el encabezado verde
         recyclerViewMedications.setLayoutManager(new LinearLayoutManager(this));
-
-        // Inicializar la lista de medicamentos (se cargará en onResume)
-        medicationList = new ArrayList<>();
-        medicationAdapter = new MedicationAdapter(medicationList);
+        medicationList = new ArrayList<>(); // creamos una lista de medicamentos
+        medicationAdapter = new MedicationAdapter(medicationList); // para ello llamamos a la funcion MedicationAdapter
         recyclerViewMedications.setAdapter(medicationAdapter);
 
-        // Configurar listener para el botón flotante de añadir medicamento
         fabAddMedication.setOnClickListener(v -> {
             Intent intent = new Intent(MedicationListActivity.this, RegisterMedicationActivity.class);
-            startActivity(intent);
+            startActivity(intent); // este es el boton (+) para dirigir a la vista de registrar medicamento
         });
 
         // Configurar listener para la eliminación de medicamentos en el adaptador del RecyclerView
@@ -58,76 +47,68 @@ public class MedicationListActivity extends AppCompatActivity {
             showDeleteConfirmationDialog(position);
         });
 
-        // Configurar listener para el botón de retroceso en el encabezado
-        // Al hacer clic, se iniciará MainActivity y luego se cerrará esta actividad.
         buttonBack.setOnClickListener(v -> {
             Intent intent = new Intent(MedicationListActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish(); // Cierra MedicationListActivity para evitar una instancia duplicada en la pila
+            startActivity(intent); // con la flecha <- retornamos a la vista principal
+            finish();
         });
     }
 
     @Override
     protected void onResume() {
-        super.onResume();
-        // Cargar medicamentos cada vez que la actividad se reanuda (ej. al volver de RegisterMedicationActivity)
-        loadMedications();
+        super.onResume(); // siguiendo la funcion anterior a la vista principal se cargan medicamentos cada vez que la actividad se reanuda
+        loadMedications(); // es decir que persisten y mantienen guardados
     }
-
-    private void loadMedications() {
+    private void loadMedications() { // para esta funcion de cargar la lista de medicamentos registrados, tambien uso SharedPreferences
         String json = SharedPreferencesHelper.getMedicationsJson(this);
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<Medication>>() {}.getType();
         List<Medication> loadedMedications = gson.fromJson(json, type);
 
-        if (loadedMedications == null) {
-            loadedMedications = new ArrayList<>();
+        if (loadedMedications == null) { // por eso se guarda de nuevo en una lista lo que has registrado
+            loadedMedications = new ArrayList<>(); // y a través de la biblioteca gson
         }
 
         medicationList.clear(); // Limpiar la lista actual
         medicationList.addAll(loadedMedications); // Añadir los medicamentos cargados
         medicationAdapter.updateMedications(medicationList); // Notificar al adaptador sobre los cambios
 
-        // Mostrar u ocultar el mensaje "No hay medicamentos registrados"
-        if (medicationList.isEmpty()) {
-            textViewNoMedications.setVisibility(View.VISIBLE);
+        // esta selectiva permitira identificar cuando la lista está vacia
+        if (medicationList.isEmpty()) { // si está vacia, colocamos el mensaje que no hay medicamentos registrados
+            textViewNoMedications.setVisibility(View.VISIBLE); // a través de un textView
             recyclerViewMedications.setVisibility(View.GONE);
-        } else {
-            textViewNoMedications.setVisibility(View.GONE);
+        } else { // si sucede lo contrario y hay medicamentos
+            textViewNoMedications.setVisibility(View.GONE); // se mostrara a cada uno de la lista
             recyclerViewMedications.setVisibility(View.VISIBLE);
         }
     }
 
 
     private void showDeleteConfirmationDialog(final int position) {
-        new AlertDialog.Builder(this)
-                .setTitle("Confirmar Eliminación")
+        new AlertDialog.Builder(this) // en caso hagas click al boton del tacho , saldrá la alerta si eliminarás el medicamento
+                .setTitle("Confirmar Eliminación") // para ello se usó el AlertDialog
                 .setMessage("¿Estás seguro de que quieres eliminar este medicamento?")
-                .setPositiveButton("Sí", (dialog, which) -> deleteMedication(position))
-                .setNegativeButton("No", null)
+                .setPositiveButton("Sí", (dialog, which) -> deleteMedication(position)) // nos redirigimos a la siguiente funcion
+                .setNegativeButton("No", null) // no pasa nada
                 .show();
     }
 
     private void deleteMedication(int position) {
-        if (position >= 0 && position < medicationList.size()) {
-            Medication medicationToDelete = medicationList.get(position);
+        if (position >= 0 && position < medicationList.size()) {  // para la elimiacion de cada medicamentos agrego una selectiva
+            Medication medicationToDelete = medicationList.get(position); // que indica si hay un numero mayor o igual a cero hasta el tamaño total hasta ese momento
+            NotificationHelper.cancelMedicationAlarm(this, medicationToDelete.getId()); // aqui hay una alarma que indica cuando el medicamento ha sido eliminado
 
-            // Cancelar la alarma asociada a este medicamento antes de eliminarlo
-            NotificationHelper.cancelMedicationAlarm(this, medicationToDelete.getId());
-
-            medicationList.remove(position); // Eliminar de la lista en memoria
-            saveMedications();
-            medicationAdapter.notifyItemRemoved(position);
+            medicationList.remove(position); // para ello primero lo eiminamos de la lista en memoria
+            saveMedications(); // guardamos lo que hay
+            medicationAdapter.notifyItemRemoved(position); // y colocamos el mensaje a mostrar
             Toast.makeText(this, "Medicamento eliminado", Toast.LENGTH_SHORT).show();
 
-            // Actualizar visibilidad del mensaje "No hay medicamentos" si la lista queda vacía
-            if (medicationList.isEmpty()) {
-                textViewNoMedications.setVisibility(View.VISIBLE);
+            if (medicationList.isEmpty()) { // y cuando la lista está vacia , se actualiza la vista con el mensaje de que no hay medicamentos registrados
+                textViewNoMedications.setVisibility(View.VISIBLE); // como en la funcion de loadMedications()
                 recyclerViewMedications.setVisibility(View.GONE);
             }
         }
     }
-
     private void saveMedications() {
         Gson gson = new Gson();
         String json = gson.toJson(medicationList);

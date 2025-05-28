@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.EditText; // Cambiamos a EditText si no usas Material Design para los campos
-import android.widget.ImageButton; // Importar ImageButton
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,8 +17,6 @@ public class SettingsActivity extends AppCompatActivity {
     private static final String KEY_USER_NAME = "userName";
     private static final String KEY_MOTIVATIONAL_MESSAGE = "motivationalMessage";
     private static final String KEY_MOTIVATIONAL_FREQUENCY = "motivationalFrequency";
-
-    // Si usas TextInputLayout, asegúrate de vincular los TextInputEditText
     private EditText editTextUserName;
     private EditText editTextMotivationalMessage;
     private EditText editTextMotivationalFrequency;
