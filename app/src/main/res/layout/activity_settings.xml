@@ -97,10 +97,10 @@
 
             <Button
                 android:id="@+id/buttonSaveSettings"
-                android:layout_width="match_parent"
+                android:layout_width="337dp"
                 android:layout_height="wrap_content"
-                android:text="GUARDAR CONFIGURACIONES"
                 android:backgroundTint="@color/primaryColor"
+                android:text="GUARDAR CONFIGURACIONES"
                 android:textColor="@color/white" />
 
         </LinearLayout>

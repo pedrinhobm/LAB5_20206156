@@ -1,5 +1,4 @@
 package com.example.lab5_20206156;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,126 +13,109 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
 
+// este es la interfaz del usuario
+public class MainActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "MyMedicationPrefs";
     private static final String KEY_USER_NAME = "userName";
     private static final String KEY_MOTIVATIONAL_MESSAGE = "motivationalMessage";
     private static final String IMAGE_FILE_NAME = "profile_image.png";
-
     private TextView textViewGreeting;
     private TextView textViewMotivationalMessage;
     private ImageView imageViewProfile;
     private SharedPreferences sharedPreferences;
 
-    // Launcher para seleccionar imagen de la galería
+
+    // Aqui si use IA con launcher para seleccionar una imagen de mi galería
     private final ActivityResultLauncher<String> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    try {
+                    try { // aquí la función cumple con un URI que identifica la imagen escogisa
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-                        imageViewProfile.setImageBitmap(bitmap);
+                        imageViewProfile.setImageBitmap(bitmap); // tambien lo use para un dato de ImageView
                         saveImageToInternalStorage(bitmap);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        e.printStackTrace(); // en caso que no funciono , cargará un error indicandolo ahí mismo
                         Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
     );
 
-    // Launcher para solicitar permisos
+    // De igual manera aquí porque consideré que fue necesario un auncher que solicita permisos
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(),
             isGranted -> {
                 if (isGranted) {
                     pickImageLauncher.launch("image/*");
                 } else {
-                    Toast.makeText(this, "Permiso de almacenamiento denegado. No se puede cargar la imagen.", Toast.LENGTH_SHORT).show();
-                }
-            }
+                    Toast.makeText(this, "Permiso de almacenamiento denegado.", Toast.LENGTH_SHORT).show();
+                } // ojo que se puede seleccionar la imagen
+            } // gracias al <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // --- IMPORTANTE: CREAR LOS CANALES DE NOTIFICACIÓN AQUÍ ---
-        // Esto asegura que los canales estén registrados con el sistema Android
-        // antes de que cualquier notificación intente usarlos.
         NotificationHelper.createNotificationChannels(this);
-        // ------------------------------------------------------------
-
         textViewGreeting = findViewById(R.id.textViewGreeting);
         textViewMotivationalMessage = findViewById(R.id.textViewMotivationalMessage);
         imageViewProfile = findViewById(R.id.imageViewProfile);
         Button buttonViewMedications = findViewById(R.id.buttonViewMedications);
         Button buttonSettings = findViewById(R.id.buttonSettings);
-
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-        // Cargar y mostrar datos guardados
-        loadUserData();
+        loadUserData();  // esta función sirve para mostrar datos guardados
         loadImageFromInternalStorage();
 
-        // Configurar listener para la imagen (subir desde galería)
         imageViewProfile.setOnClickListener(v -> {
-            checkAndRequestPermissions();
+            checkAndRequestPermissions(); // aqui use ia ya que al subir la imagen desde mi galeria era en base a la configuración del listener
         });
 
-        // Configurar listeners para los botones
         buttonViewMedications.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MedicationListActivity.class);
-            startActivity(intent);
+            startActivity(intent); // este es el boton que redirige a la lista de medicamentos , para cambiar de vista uso Intent
         });
 
         buttonSettings.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
+            startActivity(intent); // este es el boton de configuración de datos , para cambiar de vista uso Intent
         });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Recargar datos en onResume para actualizar después de volver de SettingsActivity
-        loadUserData();
-    }
+        loadUserData(); // se va llamar a esa función para que actualice los datos colocados en la configuración
+    } // tanto del mensaje motivacional o el nombre del usuario
 
-    private void loadUserData() {
-        String userName = sharedPreferences.getString(KEY_USER_NAME, "Usuario");
-        String motivationalMessage = sharedPreferences.getString(KEY_MOTIVATIONAL_MESSAGE, "¡Hoy es un buen día para cuidar tu salud!");
-
+    private void loadUserData() {  // aqui si usa SharedPreferences para guardar y actualizar los datos luego de haber realizado los cambios en la vista de configuración
+        String userName = sharedPreferences.getString(KEY_USER_NAME, "Usuario"); // por ello se uso shared, al abrir la imagen por primera vez se vera el nombre de USUARIO
+        String motivationalMessage = sharedPreferences.getString(KEY_MOTIVATIONAL_MESSAGE, "¡Hoy es un buen día para cuidar tu salud!"); // así como el mensaje motivacional que esta en el enunciado del LAB5
         textViewGreeting.setText("¡Hola, " + userName + "!");
         textViewMotivationalMessage.setText(motivationalMessage);
     }
 
-    private void checkAndRequestPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Para Android 13 (API 33) y superior, se necesita READ_MEDIA_IMAGES
+    private void checkAndRequestPermissions() { // continuando con lo anterior permiso
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // busca solicitarlo al usuario de acuerdo a la version de android
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
                 pickImageLauncher.launch("image/*");
-            } else {
+            } else { // en caso de éxtio , se abre el selector de imagenes , ya sea de galeria o google photos
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
             }
         } else {
-            // Para versiones anteriores, se necesita READ_EXTERNAL_STORAGE
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                pickImageLauncher.launch("image/*");
+                pickImageLauncher.launch("image/*"); // aqui es para versiones pasadas
             } else {
                 requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             }
@@ -143,14 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveImageToInternalStorage(Bitmap bitmap) {
         File directory = getDir("images", Context.MODE_PRIVATE); // Directorio privado para imágenes
-        File file = new File(directory, IMAGE_FILE_NAME);
+        File file = new File(directory, IMAGE_FILE_NAME); // permite que la imagen sea accesible solo en el app desarrollado
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos); // Guardar como PNG
+            fos = new FileOutputStream(file); // aqui si use ia  para comprimir la imagen
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos); // al formato PNG
             Toast.makeText(this, "Imagen guardada exitosamente", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // en caso de un error
             Toast.makeText(this, "Error al guardar la imagen", Toast.LENGTH_SHORT).show();
         } finally {
             try {
@@ -163,14 +144,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void loadImageFromInternalStorage() {
-        File directory = getDir("images", Context.MODE_PRIVATE);
+    private void loadImageFromInternalStorage() { // aqui carga la imagen previa que guardaste desde el almacen interno
+        File directory = getDir("images", Context.MODE_PRIVATE); // y eso lo muestra con ImageView
         File file = new File(directory, IMAGE_FILE_NAME);
         if (file.exists()) {
             FileInputStream fis = null;
             try {
-                fis = new FileInputStream(file);
-                Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                fis = new FileInputStream(file); // el escenario es si encuentra el archivo
+                Bitmap bitmap = BitmapFactory.decodeStream(fis); // dentro del directorio privado del app
                 imageViewProfile.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();

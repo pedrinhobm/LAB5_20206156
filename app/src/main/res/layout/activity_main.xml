@@ -10,19 +10,18 @@
 
     <ImageView
         android:id="@+id/imageViewProfile"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
+        android:layout_width="295dp"
+        android:layout_height="251dp"
+        android:layout_marginTop="32dp"
         android:background="#E0E0E0"
-        android:src="@drawable/medicine"
+        android:clickable="true"
         android:contentDescription="Imagen de perfil"
+        android:focusable="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/medicine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="32dp"
-        android:clickable="true"
-        android:focusable="true"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewGreeting"
@@ -54,10 +53,12 @@
         android:id="@+id/buttonViewMedications"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
         android:layout_marginTop="48dp"
-        android:text="Ver mis medicamentos"
-        android:padding="12dp"
+        android:layout_marginEnd="60dp"
         android:backgroundTint="@color/primaryColor"
+        android:padding="12dp"
+        android:text="Ver mis medicamentos"
         android:textColor="@color/onPrimaryColor"
         app:cornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,14 +69,15 @@
         android:id="@+id/buttonSettings"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
         android:layout_marginTop="16dp"
-        android:text="Configuraciones"
-        android:padding="12dp"
+        android:layout_marginEnd="60dp"
         android:backgroundTint="@color/black"
+        android:padding="12dp"
+        android:text="Configuraciones"
         android:textColor="@color/white"
         app:cornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonViewMedications" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

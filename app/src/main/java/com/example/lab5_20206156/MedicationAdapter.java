@@ -79,7 +79,6 @@ public class MedicationAdapter extends RecyclerView.Adapter<MedicationAdapter.Me
         }
     }
 
-    // Método para actualizar la lista de medicamentos
     public void updateMedications(List<Medication> newMedications) {
         this.medicationList = newMedications;
         notifyDataSetChanged();

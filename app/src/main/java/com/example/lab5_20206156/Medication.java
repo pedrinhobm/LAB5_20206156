@@ -11,10 +11,6 @@ public class Medication implements Serializable {
     private int frequencyHours; // Cada X horas
     private long startDateMillis; // Fecha y Hora de inicio en milisegundos
 
-    public Medication() {
-        // Constructor vacío requerido para Gson
-    }
-
     public Medication(String id, String name, String type, String dosage, int frequencyHours, long startDateMillis) {
         this.id = id;
         this.name = name;
@@ -49,7 +45,6 @@ public class Medication implements Serializable {
         return startDateMillis;
     }
 
-    // Setters (si es necesario, aunque para objetos inmutables no se usan)
     public void setId(String id) {
         this.id = id;
     }
