@@ -108,7 +108,6 @@ public class MedicationListActivity extends AppCompatActivity {
                 .show();
     }
 
-
     private void deleteMedication(int position) {
         if (position >= 0 && position < medicationList.size()) {
             Medication medicationToDelete = medicationList.get(position);
@@ -117,8 +116,8 @@ public class MedicationListActivity extends AppCompatActivity {
             NotificationHelper.cancelMedicationAlarm(this, medicationToDelete.getId());
 
             medicationList.remove(position); // Eliminar de la lista en memoria
-            saveMedications(); // Guardar la lista actualizada en SharedPreferences
-            medicationAdapter.notifyItemRemoved(position); // Notificar al adaptador para actualizar la UI
+            saveMedications();
+            medicationAdapter.notifyItemRemoved(position);
             Toast.makeText(this, "Medicamento eliminado", Toast.LENGTH_SHORT).show();
 
             // Actualizar visibilidad del mensaje "No hay medicamentos" si la lista queda vacía
@@ -128,7 +127,6 @@ public class MedicationListActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private void saveMedications() {
         Gson gson = new Gson();

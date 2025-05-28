@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putString(KEY_USER_NAME, userName);
         editor.putString(KEY_MOTIVATIONAL_MESSAGE, motivationalMessage);
         editor.putInt(KEY_MOTIVATIONAL_FREQUENCY, motivationalFrequency);
-        editor.apply(); // O editor.commit();
+        editor.apply();
 
         Toast.makeText(this, "Configuraciones guardadas", Toast.LENGTH_SHORT).show();
 

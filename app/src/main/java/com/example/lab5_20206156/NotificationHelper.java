@@ -203,7 +203,7 @@ public class NotificationHelper {
     }
 
     // Programar alarma para notificación motivacional
-    public static void scheduleMotivationalAlarm(Context context, String message, int frequencyHours) {
+    public static void scheduleMotivationalAlarm(Context context, String message, int frequencyHours) { // Reverted to frequencyHours
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, NotificationReceiver.class);
         intent.setAction("ACTION_MOTIVATIONAL_REMINDER");
@@ -216,7 +216,7 @@ public class NotificationHelper {
 
         // Calcular la primera hora (por ejemplo, 1 hora después de guardar o la próxima hora completa)
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR_OF_DAY, 1); // Empezar en la próxima hora
+        calendar.add(Calendar.HOUR_OF_DAY, 1); // Reverted to Calendar.HOUR_OF_DAY
 
         long intervalMillis = (long) frequencyHours * 60 * 60 * 1000; // Convertir horas a milisegundos
 
@@ -225,12 +225,11 @@ public class NotificationHelper {
         } else {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), intervalMillis, pendingIntent);
         }
-        Log.d("AlarmDebug", "Alarma motivacional programada con mensaje: '" + message + "' cada " + frequencyHours + " horas.");
-        Toast.makeText(context, "Notificación motivacional programada cada " + frequencyHours + " horas.", Toast.LENGTH_SHORT).show();
+        Log.d("AlarmDebug", "Alarma motivacional programada con mensaje: '" + message + "' cada " + frequencyHours + " horas."); // Updated log message
+        Toast.makeText(context, "Notificación motivacional programada cada " + frequencyHours + " horas.", Toast.LENGTH_SHORT).show(); // Updated Toast message
     }
 
-    // Mostrar notificación motivacional
-    @SuppressLint("MissingPermission") // Suprime la advertencia de lint para POST_NOTIFICATIONS
+    @SuppressLint("MissingPermission")
     public static void showMotivationalNotification(Context context, String message) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_MOTIVATIONAL_ID)
                 .setSmallIcon(R.drawable.ic_motivational_notification)
