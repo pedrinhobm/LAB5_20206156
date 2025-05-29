@@ -13,30 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BootReceiver extends BroadcastReceiver {
-
+    // para esta funcion si usa IA porque considere necesario que se debe reprogramar las alarmas
+    // de notificación cuando el app se ha reiniciado y las alarmas se eliminan
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             Toast.makeText(context, "Reiniciando alarmas de medicamentos...", Toast.LENGTH_LONG).show();
 
-            // Reprogramar todas las alarmas de medicamentos
-            Gson gson = new Gson();
-            String json = SharedPreferencesHelper.getMedicationsJson(context);
-            Type type = new TypeToken<ArrayList<Medication>>() {}.getType();
-            List<Medication> medicationList = gson.fromJson(json, type);
+            Gson gson = new Gson(); // medicamento
+            String json = SharedPreferencesHelper.getMedicationsJson(context); // durante la restauración, usaremos los datos guardados
+            Type type = new TypeToken<ArrayList<Medication>>() {}.getType(); // y configurades con SharedPreferencies
+            List<Medication> medicationList = gson.fromJson(json, type); //y los vuelve a programarlo con otro arreglo
 
-            if (medicationList != null) {
-                for (Medication medication : medicationList) {
-                    NotificationHelper.scheduleMedicationAlarm(context, medication);
+            if (medicationList != null) { // al no haber una lista vacia
+                for (Medication medication : medicationList) { // volvemos a llamar cada fucnion
+                    NotificationHelper.scheduleMedicationAlarm(context, medication); // que vuelve a configurar su alarma
                 }
             }
 
-            // Reprogramar la notificación motivacional
-            String motivationalMessage = context.getSharedPreferences("MyMedicationPrefs", Context.MODE_PRIVATE)
-                    .getString("motivationalMessage", "¡Hoy es un buen día para cuidar tu salud!");
+            String motivationalMessage = context.getSharedPreferences("MyMedicationPrefs", Context.MODE_PRIVATE) // mensaje motivacional
+                    .getString("motivationalMessage", "¡Hoy es un buen día para cuidar tu salud!"); // aqui recupera el mensaje motivacional
             int motivationalFrequency = context.getSharedPreferences("MyMedicationPrefs", Context.MODE_PRIVATE)
                     .getInt("motivationalFrequency", 24);
-
             NotificationHelper.scheduleMotivationalAlarm(context, motivationalMessage, motivationalFrequency);
         }
     }

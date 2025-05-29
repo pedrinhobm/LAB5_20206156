@@ -1,22 +1,18 @@
 package com.example.lab5_20206156;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Intent; // Importar Intent
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton; // Importar ImageButton para el botón de retroceso
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,77 +22,65 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class RegisterMedicationActivity extends AppCompatActivity {
-
     private EditText editTextMedicationName;
     private Spinner spinnerMedicationType;
     private EditText editTextDosage;
     private EditText editTextFrequency;
     private TextView textViewStartDate;
     private Button buttonSaveMedication;
-    private ImageButton buttonBack; // <--- AGREGADO: Declaración del ImageButton
-
+    private ImageButton buttonBack;
     private Calendar selectedCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_medication);
-
-        // Inicializar vistas
         editTextMedicationName = findViewById(R.id.editTextMedicationName);
         spinnerMedicationType = findViewById(R.id.spinnerMedicationType);
         editTextDosage = findViewById(R.id.editTextDosage);
         editTextFrequency = findViewById(R.id.editTextFrequency);
         textViewStartDate = findViewById(R.id.textViewStartDate);
         buttonSaveMedication = findViewById(R.id.buttonSaveMedication);
-        buttonBack = findViewById(R.id.buttonBack); // <--- AGREGADO: Inicialización del ImageButton
-
-        selectedCalendar = Calendar.getInstance(); // Inicializar con la fecha y hora actual
+        buttonBack = findViewById(R.id.buttonBack);
+        selectedCalendar = Calendar.getInstance();
         updateDateTimeDisplay();
-
-        // Configurar listeners
         textViewStartDate.setOnClickListener(v -> showDateTimePicker());
         buttonSaveMedication.setOnClickListener(v -> saveMedication());
 
-        // <--- AGREGADO: Configurar listener para el botón de retroceso
         buttonBack.setOnClickListener(v -> {
-            // Crear un Intent para volver a MedicationListActivity
             Intent intent = new Intent(RegisterMedicationActivity.this, MedicationListActivity.class);
-            startActivity(intent);
-            // Finalizar la actividad actual para que no se quede en la pila de actividades
+            startActivity(intent); // con la flecha <- retornamos a la lista de medicamentos
             finish();
         });
     }
 
-    private void showDateTimePicker() {
-        // Date Picker
+    private void showDateTimePicker() { // En esta funcion de DatePickerDialog use IA para establecer la fecha inicial para ser notificado
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                (view, year, month, dayOfMonth) -> {
+                (view, year, month, dayOfMonth) -> { // así selecciono día,mes y año
                     selectedCalendar.set(Calendar.YEAR, year);
                     selectedCalendar.set(Calendar.MONTH, month);
                     selectedCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                    // Time Picker después de seleccionar la fecha
+
                     showTimePicker();
                 },
                 selectedCalendar.get(Calendar.YEAR),
                 selectedCalendar.get(Calendar.MONTH),
                 selectedCalendar.get(Calendar.DAY_OF_MONTH));
-        datePickerDialog.show();
+        datePickerDialog.show(); // y lo muestro dentro del campo
     }
 
-    private void showTimePicker() {
-        // Time Picker
+    private void showTimePicker() { // En esta funcion de TimePickerDialog use IA para establecer la fecha inicial para ser notificado
         TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                (view, hourOfDay, minute) -> {
-                    selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                (view, hourOfDay, minute) -> { // asi  selecciono hora, minutos
+                    selectedCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay); // pero reseteamos los segundos, no considero que hará falta
                     selectedCalendar.set(Calendar.MINUTE, minute);
-                    selectedCalendar.set(Calendar.SECOND, 0); // Resetear segundos
+                    selectedCalendar.set(Calendar.SECOND, 0);
                     updateDateTimeDisplay();
                 },
                 selectedCalendar.get(Calendar.HOUR_OF_DAY),
                 selectedCalendar.get(Calendar.MINUTE),
-                false); // false para formato 12 horas, true para 24 horas
-        timePickerDialog.show();
+                false);
+        timePickerDialog.show(); // y lo muestro dentro del campo
     }
 
     private void updateDateTimeDisplay() {
@@ -104,7 +88,7 @@ public class RegisterMedicationActivity extends AppCompatActivity {
         textViewStartDate.setText(sdf.format(selectedCalendar.getTime()));
     }
 
-    private void saveMedication() {
+    private void saveMedication() { // aqui realizara la misma función de rellenear los campos como en la vista de configuración
         String name = editTextMedicationName.getText().toString().trim();
         String type = spinnerMedicationType.getSelectedItem().toString();
         String dosage = editTextDosage.getText().toString().trim();
@@ -118,7 +102,7 @@ public class RegisterMedicationActivity extends AppCompatActivity {
         int frequencyHours;
         try {
             frequencyHours = Integer.parseInt(frequencyStr);
-            if (frequencyHours <= 0) {
+            if (frequencyHours <= 0){
                 Toast.makeText(this, "La frecuencia debe ser un número positivo.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -127,13 +111,10 @@ public class RegisterMedicationActivity extends AppCompatActivity {
             return;
         }
 
-        // Generar un ID único para el medicamento
         String id = UUID.randomUUID().toString();
-        long startDateMillis = selectedCalendar.getTimeInMillis();
+        long startDateMillis = selectedCalendar.getTimeInMillis(); // cargamos el tiempo en ms
+        Medication newMedication = new Medication(id, name, type, dosage, frequencyHours, startDateMillis); // y todos los datos lo guardamos a la clase de Medication para mostrarlo en la vista anterior
 
-        Medication newMedication = new Medication(id, name, type, dosage, frequencyHours, startDateMillis);
-
-        // Cargar medicamentos existentes
         Gson gson = new Gson();
         String json = SharedPreferencesHelper.getMedicationsJson(this);
         Type typeList = new TypeToken<ArrayList<Medication>>() {}.getType();
@@ -143,17 +124,11 @@ public class RegisterMedicationActivity extends AppCompatActivity {
             medicationList = new ArrayList<>();
         }
 
-        // Añadir el nuevo medicamento
         medicationList.add(newMedication);
-
-        // Guardar la lista actualizada
-        String updatedJson = gson.toJson(medicationList);
+        String updatedJson = gson.toJson(medicationList); // se guarda en formato Json la lista
         SharedPreferencesHelper.saveMedicationsJson(this, updatedJson);
-
-        // Programar la primera notificación para este medicamento
-        NotificationHelper.scheduleMedicationAlarm(this, newMedication);
-
+        NotificationHelper.scheduleMedicationAlarm(this, newMedication); // aqui usamos la clase  NotificationHelper para esperar su anuncio del medicamento con su hora
         Toast.makeText(this, "Medicamento guardado y recordatorio programado.", Toast.LENGTH_LONG).show();
-        finish(); // Volver a la lista de medicamentos
+        finish(); // Con un Toast anuncian el guardado correcto del medicamento y tiempo de notificación al volver a la lista de medicamentos
     }
 }

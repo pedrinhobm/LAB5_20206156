@@ -1,6 +1,4 @@
-package com.example.lab5_20206156; // Asegúrate de que el paquete coincida con tu proyecto
-
-import android.content.Context;
+package com.example.lab5_20206156;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,7 +6,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -21,7 +18,7 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText editTextMotivationalMessage;
     private EditText editTextMotivationalFrequency;
     private Button buttonSaveSettings;
-    private ImageButton buttonBack; // Declarar el ImageButton
+    private ImageButton buttonBack;
 
     private SharedPreferences sharedPreferences;
 
@@ -30,65 +27,65 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        // Inicializar vistas
-        editTextUserName = findViewById(R.id.editTextUserName);
-        editTextMotivationalMessage = findViewById(R.id.editTextMotivationalMessage);
-        editTextMotivationalFrequency = findViewById(R.id.editTextMotivationalFrequency);
+        // en la configuración encontramos la edición del nombre del usuario,mensaje motivacional y la frecuencia por hora en notificar
+        editTextUserName = findViewById(R.id.editTextUserName); // por eso es cuando abres por primera vez el app , solo dirá " hola, usuario"
+        editTextMotivationalMessage = findViewById(R.id.editTextMotivationalMessage); // y ese nombre junto con el  mensaje a editar ,
+        editTextMotivationalFrequency = findViewById(R.id.editTextMotivationalFrequency); // serán guardados en SharedPreferences
         buttonSaveSettings = findViewById(R.id.buttonSaveSettings);
-        buttonBack = findViewById(R.id.buttonBack); // Inicializar el botón de retroceso
+        buttonBack = findViewById(R.id.buttonBack);
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-        // Cargar y mostrar configuraciones actuales
         loadSettings();
+        buttonSaveSettings.setOnClickListener(v -> saveSettings()); // asi como las que las configuraciones guardadas
 
-        // Configurar listener para guardar configuraciones
-        buttonSaveSettings.setOnClickListener(v -> saveSettings());
-
-        // Configurar listener para el botón de retroceso
         buttonBack.setOnClickListener(v -> {
-            // Al hacer clic, simplemente finaliza esta actividad para volver a la anterior
+            Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+            startActivity(intent); // con la flecha <- retornamos a la vista principal
             finish();
         });
     }
 
-    private void loadSettings() {
-        String userName = sharedPreferences.getString(KEY_USER_NAME, ""); // Vacío para que el hint se vea claro
-        String motivationalMessage = sharedPreferences.getString(KEY_MOTIVATIONAL_MESSAGE, ""); // Vacío para que el hint se vea claro
-        int motivationalFrequency = sharedPreferences.getInt(KEY_MOTIVATIONAL_FREQUENCY, 24); // Valor por defecto
-
+    private void loadSettings() {  // por ello es que cuando salimos y volvemos el app , se debe cargar configuraciones realizadas
+        String userName = sharedPreferences.getString(KEY_USER_NAME, "");
+        String motivationalMessage = sharedPreferences.getString(KEY_MOTIVATIONAL_MESSAGE, "");
+        int motivationalFrequency = sharedPreferences.getInt(KEY_MOTIVATIONAL_FREQUENCY, 24);
         editTextUserName.setText(userName);
         editTextMotivationalMessage.setText(motivationalMessage);
         editTextMotivationalFrequency.setText(String.valueOf(motivationalFrequency));
     }
 
-    private void saveSettings() {
-        String userName = editTextUserName.getText().toString().trim();
+    private void saveSettings() { // con el boton "GUARDAR CONFIGURACIONES" manda a la accion de guardarlos
+        String userName = editTextUserName.getText().toString().trim(); // cada uno de los campos mencionados
         String motivationalMessage = editTextMotivationalMessage.getText().toString().trim();
         String frequencyStr = editTextMotivationalFrequency.getText().toString().trim();
 
+        // ahora pongamos por caso que si no rellenas un campo, saldrán las siguientes advertencias
+        editTextUserName.setError(null);
+        editTextMotivationalMessage.setError(null);
+        editTextMotivationalFrequency.setError(null);
+
         if (userName.isEmpty()) {
-            editTextUserName.setError("El nombre de usuario no puede estar vacío.");
+            Toast.makeText(this, "El nombre de usuario no puede estar vacío.", Toast.LENGTH_SHORT).show();
             return;
         }
         if (motivationalMessage.isEmpty()) {
-            editTextMotivationalMessage.setError("El mensaje motivacional no puede estar vacío.");
+            Toast.makeText(this, "El mensaje motivacional no puede estar vacío.", Toast.LENGTH_SHORT).show();
             return;
         }
         if (frequencyStr.isEmpty()) {
-            editTextMotivationalFrequency.setError("La frecuencia no puede estar vacía.");
+            Toast.makeText(this, "La frecuencia no puede estar vacía.", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        // lo mismo sucedera aqui en caso no hayas elegido un número del 1 hasta adelante
         int motivationalFrequency;
         try {
             motivationalFrequency = Integer.parseInt(frequencyStr);
             if (motivationalFrequency <= 0) {
-                editTextMotivationalFrequency.setError("La frecuencia debe ser un número positivo.");
+                Toast.makeText(this, "La frecuencia debe ser un número positivo.", Toast.LENGTH_SHORT).show();
                 return;
             }
         } catch (NumberFormatException e) {
-            editTextMotivationalFrequency.setError("Frecuencia inválida. Ingresa un número.");
+            Toast.makeText(this, "Frecuencia inválida. Ingresa un número.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -97,13 +94,8 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putString(KEY_MOTIVATIONAL_MESSAGE, motivationalMessage);
         editor.putInt(KEY_MOTIVATIONAL_FREQUENCY, motivationalFrequency);
         editor.apply();
-
-        Toast.makeText(this, "Configuraciones guardadas", Toast.LENGTH_SHORT).show();
-
-        // Reprogramar la notificación motivacional con la nueva frecuencia
-        NotificationHelper.scheduleMotivationalAlarm(this, motivationalMessage, motivationalFrequency);
-
-        // Opcional: Volver a la actividad anterior (MainActivity)
+        Toast.makeText(this, "Configuraciones guardadas", Toast.LENGTH_SHORT).show(); // si guardamos , volvemos a la vista principal
+        NotificationHelper.scheduleMotivationalAlarm(this, motivationalMessage, motivationalFrequency); // y con el touch te indicará guardado exitoso junto con la actualización
         finish();
     }
 }

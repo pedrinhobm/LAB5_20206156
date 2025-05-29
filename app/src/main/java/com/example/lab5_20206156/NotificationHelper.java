@@ -97,9 +97,9 @@ public class NotificationHelper {
         if (pendingIntent != null) {
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel(); // también cancelamos el PendingIntent
-            Toast.makeText(context, "Alarma cancelada para " + medicationId, Toast.LENGTH_SHORT).show(); // este es el toast de la alarma cancelada
+            Toast.makeText(context, "Alarma cancelada", Toast.LENGTH_SHORT).show(); // este es el toast de la alarma cancelada
         } else {
-            Log.d("AlarmDebug", "No se encontró PendingIntent para cancelar la alarma: " + medicationId);
+            Log.d("AlarmDebug", "No se encontró PendingIntent para cancelar la alarma" );
         }
     }
 
@@ -107,9 +107,7 @@ public class NotificationHelper {
     @SuppressLint("MissingPermission")
     public static void showMedicationNotification(Context context, String medicationName, String medicationType, String dosage) {
         String channelId; // en esta funcion se mostrara notificación de medicamento
-        int smallIconResId;
-
-        // es por ello que se va distribuir por el canal y icono de cada medicamento
+        int smallIconResId; // es por ello que se va distribuir por el canal y icono de cada medicamento
         switch (medicationType) {
             case "Pastilla":
                 channelId = CHANNEL_PILL_ID;
@@ -132,7 +130,6 @@ public class NotificationHelper {
                 smallIconResId = R.drawable.ic_pill_notification;
                 break;
         }
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(smallIconResId)
                 .setContentTitle("Recordatorio de medicamento: " + medicationName)

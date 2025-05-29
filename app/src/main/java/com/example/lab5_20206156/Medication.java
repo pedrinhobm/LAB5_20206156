@@ -8,7 +8,6 @@ public class Medication implements Serializable {
     private String dosage;
     private int frequencyHours;
     private long startDateMillis;
-
     public Medication(String id, String name, String type, String dosage, int frequencyHours, long startDateMillis) {
         this.id = id;
         this.name = name;

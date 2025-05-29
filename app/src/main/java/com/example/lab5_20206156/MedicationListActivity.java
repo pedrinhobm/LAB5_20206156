@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MedicationListActivity extends AppCompatActivity {
-
     private RecyclerView recyclerViewMedications;
     private MedicationAdapter medicationAdapter;
     private List<Medication> medicationList;
@@ -42,9 +41,8 @@ public class MedicationListActivity extends AppCompatActivity {
             startActivity(intent); // este es el boton (+) para dirigir a la vista de registrar medicamento
         });
 
-        // Configurar listener para la eliminación de medicamentos en el adaptador del RecyclerView
         medicationAdapter.setOnItemClickListener(position -> {
-            showDeleteConfirmationDialog(position);
+            showDeleteConfirmationDialog(position); // con la configuracion del listener, eliminamos el medicamento en el adaptador del RecyclerView
         });
 
         buttonBack.setOnClickListener(v -> {
@@ -69,9 +67,10 @@ public class MedicationListActivity extends AppCompatActivity {
             loadedMedications = new ArrayList<>(); // y a través de la biblioteca gson
         }
 
-        medicationList.clear(); // Limpiar la lista actual
-        medicationList.addAll(loadedMedications); // Añadir los medicamentos cargados
-        medicationAdapter.updateMedications(medicationList); // Notificar al adaptador sobre los cambios
+        // las acciones de la lista de medicamentos están en limpiar lo que hay en la vista, añadir los medicamentos cargados
+        medicationList.clear();  // y sobretodo , llamar al adaptador la actualización de la lista
+        medicationList.addAll(loadedMedications);
+        medicationAdapter.updateMedications(medicationList);
 
         // esta selectiva permitira identificar cuando la lista está vacia
         if (medicationList.isEmpty()) { // si está vacia, colocamos el mensaje que no hay medicamentos registrados
@@ -82,8 +81,6 @@ public class MedicationListActivity extends AppCompatActivity {
             recyclerViewMedications.setVisibility(View.VISIBLE);
         }
     }
-
-
     private void showDeleteConfirmationDialog(final int position) {
         new AlertDialog.Builder(this) // en caso hagas click al boton del tacho , saldrá la alerta si eliminarás el medicamento
                 .setTitle("Confirmar Eliminación") // para ello se usó el AlertDialog

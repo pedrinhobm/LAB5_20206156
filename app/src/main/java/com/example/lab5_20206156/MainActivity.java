@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         textViewGreeting.setText("¡Hola, " + userName + "!");
         textViewMotivationalMessage.setText(motivationalMessage);
     }
-
     private void checkAndRequestPermissions() { // continuando con lo anterior permiso
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // busca solicitarlo al usuario de acuerdo a la version de android
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
